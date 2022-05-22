@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: capstone-deployment
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: capstone
+        role: rolling-update
+    spec:
+      containers:
+      - name: capstone
+        image: docker.io/zyad99/capstone
+        imagePullPolicy: "Always"
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
