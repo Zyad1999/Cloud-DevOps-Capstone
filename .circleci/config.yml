@@ -78,6 +78,27 @@ jobs:
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
             docker push zyad99/capstone
             
+  deploy-to-eks:
+    docker:
+      - image: amazon/aws-cli
+    working_directory: ~/repo
+    steps: 
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+            echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+            sudo apt-get update
+            sudo apt-get install -y kubectl
+
+      - run:
+          name: deploy to eks
+          command: |
+            aws eks --region us-east-1 update-kubeconfig --name capstone
+            kubectl get pods
+            kubectl apply -f deploy.yml
+            
 workflows:
   default:
     jobs:
@@ -86,3 +107,5 @@ workflows:
         requires: [build]
     - upload-to-dockerhub:
         requires: [lint]
+    - deploy-to-eks:
+        requires: [upload-to-dockerhub]
