@@ -93,7 +93,7 @@ jobs:
       - kubernetes/create-or-update-resource:
           get-rollout-status: true
           resource-file-path: deploy.yml
-          resource-name: deploy/capstone
+          resource-name: deployment/capstone
           
   create-small-cluster:
     executor: aws-eks/python3
@@ -157,4 +157,4 @@ workflows:
           record: true
           requires:
             - create-deployment
-          resource-name: deploy/capstone
+          resource-name: deployment/capstone
