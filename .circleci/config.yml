@@ -59,7 +59,7 @@ jobs:
   
   upload-to-dockerhub:
     docker:
-      - image: python:3.7.3-stretch
+      - image: circleci/buildpack-deps:stretch
 
     working_directory: ~/repo
     steps:
