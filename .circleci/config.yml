@@ -54,7 +54,8 @@ jobs:
       - run:
           name: run lint
           command: |
-            make lint
+            hadolint Dockerfile
+	          pylint --disable=R,C,W1203,W1202 ./app/main.py
             
 workflows:
   default:
