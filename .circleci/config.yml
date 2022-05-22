@@ -147,10 +147,10 @@ workflows:
         requires: [lint]
     - create-small-cluster:
           cluster-name: capstone
-          requires: [lint]
+          requires: [upload-to-dockerhub]
     - create-deployment:
         cluster-name: capstone
-        requires: [lint]
+        requires: [create-small-cluster]
     - aws-eks/update-container-image:
           cluster-name: capstone
           container-image-updates: 'capstone=zyad99/capstone:latest'
