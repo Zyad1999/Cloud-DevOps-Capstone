@@ -78,25 +78,27 @@ jobs:
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
             docker push zyad99/capstone
             
-  deploy-to-eks:
-    docker:
-      - image: amazon/aws-cli
-    working_directory: ~/repo
-    steps: 
+  create-deployment:
+    executor: aws-eks/python3
+    parameters:
+      cluster-name:
+        description: |
+          Name of the EKS cluster
+        type: string
+    steps:
       - checkout
-      - run:
-          name: Install dependencies
-          command: |
-            curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-            install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+      - aws-eks/update-kubeconfig-with-authenticator:
+          cluster-name: << parameters.cluster-name >>
+          install-kubectl: true
+      - kubernetes/create-or-update-resource:
+          get-rollout-status: true
+          resource-file-path: deploy.json
+          resource-name: deploy/capstone
 
-      - run:
-          name: deploy to eks
-          command: |
-            aws eks --region us-east-2 update-kubeconfig --name capstone
-            kubectl get pods
-            kubectl apply -f deploy.yml
-            
+orbs:
+  aws-eks: circleci/aws-eks@1.1.0
+  kubernetes: circleci/kubernetes@0.4.0
+  
 workflows:
   default:
     jobs:
@@ -105,5 +107,13 @@ workflows:
         requires: [build]
     # - upload-to-dockerhub:
     #     requires: [lint]
-    - deploy-to-eks
-        # requires: [upload-to-dockerhub]
+    - create-deployment:
+        cluster-name: capstone
+        requires: [lint]
+    - aws-eks/update-container-image:
+          cluster-name: capstone
+          container-image-updates: 'capstone=zyad99/capstone:latest'
+          record: true
+          requires:
+            - create-deployment
+          resource-name: deploy/capstone
