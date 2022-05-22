@@ -143,11 +143,11 @@ workflows:
     - build
     - lint:
         requires: [build]
-    # - upload-to-dockerhub:
-    #     requires: [lint]
-    # - create-small-cluster:
-    #       cluster-name: capstone
-    #       requires: [lint]
+    - upload-to-dockerhub:
+        requires: [lint]
+    - create-small-cluster:
+          cluster-name: capstone
+          requires: [lint]
     - create-deployment:
         cluster-name: capstone
         requires: [lint]
