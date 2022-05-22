@@ -74,7 +74,7 @@ jobs:
           name: upload image
           command: |
             docker build -t capstone .
-            docker tag bostonhouse zyad99/capstone:latest
+            docker tag capstone zyad99/capstone:latest
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
             docker push zyad99/capstone
             
