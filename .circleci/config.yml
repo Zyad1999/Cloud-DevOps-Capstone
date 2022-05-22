@@ -105,5 +105,5 @@ workflows:
         requires: [build]
     # - upload-to-dockerhub:
     #     requires: [lint]
-    - deploy-to-eks:
+    - deploy-to-eks
         # requires: [upload-to-dockerhub]
