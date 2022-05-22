@@ -93,7 +93,7 @@ jobs:
       - run:
           name: deploy to eks
           command: |
-            aws eks --region us-east-1 update-kubeconfig --name capstone
+            aws eks --region us-east-2 update-kubeconfig --name capstone
             kubectl get pods
             kubectl apply -f deploy.yml
             
